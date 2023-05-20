@@ -1,0 +1,36 @@
+ENV CLASSPATH=$CLASSPATH:$base_dir/config
+
+COPY ./kafka-connect-oss-5.2.0.jar /opt/kafka/libs/
+COPY ./kafka-run-class.sh /opt/kafka/bin/
+
+# Use Confluent image and install plugins using confluent-hub
+FROM confluentinc/cp-kafka-connect:6.2.1 AS cp
+
+RUN confluent-hub install jcustenborder/kafka-connect-transform-common:0.1.0.54 --no-prompt \
+    && confluent-hub install confluentinc/kafka-connect-jdbc:10.2.0 --no-prompt \
+    && confluent-hub install confluentinc/kafka-connect-s3:10.0.3 --no-prompt
+
+# To get the files copied to the destination image in BitBucket, we need
+# to set the files owner to root as BitBucket uses userns of 100000:65536.
+USER root:root
+RUN chown root:root -R /usr/share/java && \
+    chown root:root -R /usr/share/confluent-hub-components
+
+FROM quay.io/strimzi/kafka:0.33.1-kafka-3.3.2
+USER root:root
+
+# Copy all installed plugins from Confluent image
+COPY --from=cp /usr/share/confluent-hub-components /opt/kafka/plugins/
+
+# Copy Confluent plugins
+COPY --from=cp /usr/share/java/schema-registry /opt/kafka/plugins/kafka-connect-commons
+COPY --from=cp /usr/share/java/rest-utils /opt/kafka/plugins/kafka-connect-commons
+COPY --from=cp /usr/share/java/kafka-serde-tools /opt/kafka/plugins/kafka-connect-commons
+COPY --from=cp /usr/share/java/confluent-common /opt/kafka/plugins/kafka-connect-commons
+RUN cd /opt/kafka/plugins && ls -1A | grep -v "kafka-connect-commons" | while IFS= read -r plugin; do cd $plugin; ln -s ../kafka-connect-commons; cd ..; done
+
+RUN mkdir -p /opt/kafka/plugins/debezium
+COPY ./debezium-connector-postgres/ /opt/kafka/plugins/debezium/
+COPY ./apicurio-registry-distro-connect-converter/*.jar /opt/kafka/libs/
+
+USER 1001

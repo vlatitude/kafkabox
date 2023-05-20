@@ -1,0 +1,56 @@
+{{- if eq .Values.kafkaConnector.dbSinksConfig.createConnectors true}}
+{{- range $topic := .Values.kafkaConnector.topics }}
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnector
+metadata:
+  name: {{ $topic.name | replace "_" "-" }}-sink-connector
+  labels:
+    strimzi.io/cluster: kmon
+spec:
+  pause: {{ $.Values.kafkaConnector.dbSinksConfig.pauseConnectors }}
+  class: "io.confluent.connect.jdbc.JdbcSinkConnector"
+  config:
+    topics: {{ $topic.name }}
+    table.name.format: {{ $topic.name }}
+    errors.deadletterqueue.topic.name: {{ $topic.name }}_dlq
+    {{- with $topic.config }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- range $key, $val := $.Values.kafkaConnector.config }}
+    {{ $key }}: {{ $val | quote }}
+    {{- end }}
+    {{- range $key, $val := $.Values.kafkaConnector.dbSinksConfig }}
+    {{ $key }}: {{ $val | quote }}
+    {{- end }}
+{{- end }}
+{{- end }}
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: connector-configuration-role
+rules:
+  - apiGroups: [""]
+    resources:
+      - "secrets"
+      - "configmaps"
+    resourceNames:
+      - "db-connection-url-telemetry"
+    verbs:
+      - "get"
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: connector-configuration-role-binding
+subjects:
+  - kind: ServiceAccount
+    name: kmon-connect
+roleRef:
+  kind: Role
+  name: connector-configuration-role
+  apiGroup: rbac.authorization.k8s.io
+

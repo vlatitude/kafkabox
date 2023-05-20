@@ -1,0 +1,102 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: Kafka
+metadata:
+  name: {{ include "strimzi-kafka.fullname" . }}
+  labels:
+    {{- include "strimzi-kafka.labels" . | nindent 4 }}
+spec:
+  kafka:
+    version: {{ .Values.kafka.version }}
+    replicas: {{ .Values.kafka.replicas }}
+    ############################# Socket Server Settings #############################
+    listeners:
+      - name: plain
+        port: 9092
+        type: internal
+        tls: false
+#     TODO: re-route all connections to mTLS for production
+      - name: tls
+        port: 9093
+        type: internal
+        tls: true
+        authentication:
+          type: tls
+#    TODO: re-enable mTLS for production
+    config:
+      {{- range $key, $val := .Values.kafka.config }}
+      {{ $key }}: {{ $val | quote }}
+      {{- end }}
+
+    storage:
+      type: jbod
+      volumes:
+        - id: 0
+          type: persistent-claim
+          size: {{ .Values.kafka.storageSize }}
+          class: {{ .Values.kafka.storageClass }}
+          #deleteClaim: {{ .Values.kafka.deleteClaim }}
+
+    {{- with .Values.kafka.metricsConfig }}
+    metricsConfig:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+
+    template:
+      pod:
+        metadata:
+          annotations:
+            prometheus.io/scrape: 'true'
+            prometheus.io/port: 'tcp-prometheus'
+            prometheus.io/path: '/metrics'
+
+  kafkaExporter:
+    groupRegex: ".*"
+    topicRegex: ".*"
+
+  zookeeper:
+    replicas: {{ .Values.zookeeper.replicas }}
+    storage:
+      type: persistent-claim
+      size: {{ .Values.zookeeper.storageSize }}
+      class: {{ .Values.zookeeper.storageClass }}
+      deleteClaim: {{ .Values.zookeeper.deleteClaim }}
+    config:
+      ssl.hostnameVerification: false
+      ssl.quorum.hostnameVerification: false
+    {{- with .Values.zookeeper.metricsConfig }}
+    metricsConfig:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    template:
+      pod:
+        metadata:
+          annotations:
+            prometheus.io/scrape: 'true'
+            prometheus.io/port: 'tcp-prometheus'
+            prometheus.io/path: '/metrics'
+
+  entityOperator:
+    topicOperator: {}
+    userOperator: {}
+
+  {{- if .Values.cruiseControl.enable }}
+  cruiseControl:
+    config:
+      webserver.security.enable: false
+    brokerCapacity:
+      disk: {{ .Values.cruiseControl.brokerCapacity.disk }}
+      cpuUtilization: {{ .Values.cruiseControl.brokerCapacity.cpuUtilization }}
+      inboundNetwork: {{ .Values.cruiseControl.brokerCapacity.inboundNetwork }}
+      outboundNetwork: {{ .Values.cruiseControl.brokerCapacity.outboundNetwork }}
+    {{- with .Values.cruiseControl.metricsConfig }}
+    metricsConfig:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    template:
+      pod:
+        metadata:
+          annotations:
+            prometheus.io/scrape: 'true'
+            prometheus.io/port: 'tcp-prometheus'
+            prometheus.io/path: '/metrics'
+  {{- end }}

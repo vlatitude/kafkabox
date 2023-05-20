@@ -1,0 +1,16 @@
+{{- range $topic := .Values.kafkaTopic.topics }}
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaTopic
+metadata:
+  name: {{ $topic.name | replace "_" "-" }}
+  labels:
+    strimzi.io/cluster: kmon
+spec:
+  topicName: {{ $topic.name }}
+  partitions: {{ $topic.partitions }}
+  config:
+    {{- range $key, $val := $topic.config }}
+    {{ $key }}: {{ $val | quote }}
+    {{- end }}
+{{- end }}

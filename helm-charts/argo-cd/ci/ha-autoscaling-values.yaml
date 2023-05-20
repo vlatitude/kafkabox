@@ -3,14 +3,14 @@ crds:
   keep: false
 
 redis-ha:
-  enabled: true
+  enabled: false
 
 server:
   autoscaling:
     enabled: true
-    minReplicas: 2
+    minReplicas: 1
 
 repoServer:
   autoscaling:
     enabled: true
-    minReplicas: 2
+    minReplicas: 1

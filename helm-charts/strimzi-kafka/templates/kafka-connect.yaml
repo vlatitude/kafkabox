@@ -1,0 +1,47 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaConnect
+metadata:
+  name: {{ include "strimzi-kafka.fullname" . }}
+  annotations:
+    strimzi.io/use-connector-resources: "true"
+spec:
+  image: {{ .Values.kafkaConnect.image }}
+  replicas: {{ .Values.kafkaConnect.replicas }}
+  resources:
+    limits:
+      memory: {{ .Values.kafkaConnect.resources.limit.memory }}
+      cpu: {{ .Values.kafkaConnect.resources.limit.cpu }}
+  bootstrapServers: {{ include "strimzi-kafka.fullname" . }}-kafka-bootstrap:9092
+  config:
+    {{- range $key, $val := .Values.kafkaConnect.config }}
+    {{ $key }}: {{ $val | quote }}
+    {{- end }}
+
+  # externalConfiguration:
+    # env:
+  logging:
+    type: inline
+    loggers:
+      connect.root.logger.level: "INFO"
+  jvmOptions:
+    "-Xmx": {{ .Values.kafkaConnect.jvmOptions.Xmx }}
+    "-Xms": {{ .Values.kafkaConnect.jvmOptions.Xms }}
+
+  metricsConfig:
+    type: jmxPrometheusExporter
+    valueFrom:
+      configMapKeyRef:
+        name: connect-metrics
+        key: metrics-config.yml
+
+  template:
+    pod:
+      metadata:
+        {{- with .Values.podAnnotations }}
+        annotations:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
