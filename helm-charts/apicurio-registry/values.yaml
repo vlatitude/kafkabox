@@ -1,3 +1,6 @@
+
+fullnameOverride: "{{ .Release.Name }}"
+
 registry:
   enabled: true
 
