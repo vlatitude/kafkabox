@@ -90,9 +90,9 @@ kafkaConnect:
     offset.storage.topic: connect-cluster-offsets
     config.storage.topic: connect-cluster-configs
     status.storage.topic: connect-cluster-status
-    config.storage.replication.factor: 3
-    offset.storage.replication.factor: 3
-    status.storage.replication.factor: 3
+    config.storage.replication.factor: 1
+    offset.storage.replication.factor: 1
+    status.storage.replication.factor: 1
     key.converter.schemas.enable: true
     value.converter.schemas.enable: true
     #    key.converter: io.apicurio.registry.utils.converter.AvroConverter
@@ -154,4 +154,4 @@ kafkaConnector:
     errors.retry.timeout: 300000
     errors.retry.delay.max.ms: 30000
     errors.deadletterqueue.context.headers.enable: true
-    errors.deadletterqueue.topic.replication.factor: 3
+    errors.deadletterqueue.topic.replication.factor: 1
