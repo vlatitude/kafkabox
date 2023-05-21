@@ -1,0 +1,53 @@
+# Default values for strimzi-mm2.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+nameOverride: ""
+fullnameOverride: "kmon"
+
+mirrorMaker2:
+  replicas: 1
+
+  sourceCluster:
+    alias: blah
+    bootstrapServers: "bleh"
+
+  targetCluster:
+    alias: blah2
+    bootstrapServers: "bleh2"
+    config:
+      config.storage.replication.factor: 1
+      offset.storage.replication.factor: 1
+      status.storage.replication.factor: 1
+
+  topicsPattern: ".*"
+
+  sourceConnector:
+    tasksMax: 10
+    config:
+      replication.factor: 1
+      offset-syncs.topic.replication.factor: 1
+      sync.topic.acls.enabled: "false"
+      replication.policy.class: "io.strimzi.kafka.connect.mirror.IdentityReplicationPolicy"
+      replication.policy.separator: ""
+  metricsConfig:
+    type: jmxPrometheusExporter
+    valueFrom:
+      configMapKeyRef:
+        name: mirror-maker-2-metrics
+        key: metrics-config.yml
+#  heartbeatConnector:
+#    autoRestart:
+#      enabled: true
+#    config:
+#      heartbeats.topic.replication.factor: 3
+#  checkpointConnector:
+#    autoRestart:
+#      enabled: true
+#    config:
+#      checkpoints.topic.replication.factor: 3
+#      refresh.groups.interval.seconds: 600
+#      sync.group.offsets.enabled: true
+#      sync.group.offsets.interval.seconds: 60
+#      emit.checkpoints.interval.seconds: 60
+#      replication.policy.class: "org.apache.kafka.connect.mirror.IdentityReplicationPolicy"

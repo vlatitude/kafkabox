@@ -14,7 +14,7 @@ spec:
                   project: default
                   repoURL: https://github.com/vlatitude/kafkabox
                   targetRevision: HEAD
-                  path: helm-charts/strimzi-kafka
+                  path: helm-charts/strimzi/strimzi-kafka
                   namespace: kafka
 
                 - application: strimzi-kafka-operator
@@ -22,7 +22,7 @@ spec:
                   project: default
                   repoURL: https://github.com/vlatitude/kafkabox
                   targetRevision: HEAD
-                  path: helm-charts/strimzi-kafka-operator
+                  path: helm-charts/strimzi/strimzi-kafka-operator
                   namespace: operators
 
                 - application: apicurio-registry

@@ -1,0 +1,66 @@
+---
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaMirrorMaker2
+metadata:
+  name: kmon-mirror-maker2
+spec:
+  version: 3.4.0
+  replicas: {{ .Values.mirrorMaker2.replicas }}
+  connectCluster: {{ .Values.mirrorMaker2.targetCluster.alias }}
+
+  clusters:
+    - alias: {{ .Values.mirrorMaker2.sourceCluster.alias }}
+      bootstrapServers: {{ .Values.mirrorMaker2.sourceCluster.bootstrapServers }}
+      {{- with .Values.mirrorMaker2.sourceCluster.authentication }}
+      authentication:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.mirrorMaker2.sourceCluster.tls }}
+      tls:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+    - alias: {{ .Values.mirrorMaker2.targetCluster.alias }}
+      bootstrapServers: {{ .Values.mirrorMaker2.targetCluster.bootstrapServers }}
+      {{- with .Values.mirrorMaker2.targetCluster.config }}
+      config:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.mirrorMaker2.targetCluster.authentication }}
+      authentication:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.mirrorMaker2.targetCluster.tls }}
+      tls:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+  mirrors:
+    - sourceCluster: {{ .Values.mirrorMaker2.sourceCluster.alias }}
+      targetCluster: {{ .Values.mirrorMaker2.targetCluster.alias }}
+      {{- with .Values.mirrorMaker2.sourceConnector }}
+      sourceConnector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.mirrorMaker2.heartbeatConnector }}
+      heartbeatConnector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.mirrorMaker2.checkpointConnector }}
+      checkpointConnector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      topicsPattern: ".*"
+
+  {{- with .Values.mirrorMaker2.metricsConfig }}
+  metricsConfig:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+
+  template:
+    pod:
+      metadata:
+        annotations:
+          prometheus.io/scrape: 'true'
+          prometheus.io/port: 'tcp-prometheus'
+          prometheus.io/path: '/metrics'
