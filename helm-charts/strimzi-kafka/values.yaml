@@ -83,7 +83,7 @@ kafkaConnect:
     # Use -Xms to specify the initial Java heap size
     Xmx: "1g"
     Xms: "1g"
-
+  bootstrapServers: "{{ include strimzi-kafka.fullname . }}-kafka-bootstrap:9092"
   config:
     group.id: xd
     auto.register.schemas: true

@@ -10,7 +10,7 @@ spec:
           - list:
               elements:
                 - application: strimzi-kafka
-                  prefix: xd-strimzi-kafka
+                  prefix: xd
                   project: default
                   repoURL: https://github.com/vlatitude/kafkabox
                   targetRevision: HEAD
@@ -18,7 +18,7 @@ spec:
                   namespace: kafka
 
                 - application: strimzi-kafka-operator
-                  prefix: xd-strimzi-kafka-operator
+                  prefix: xd
                   project: default
                   repoURL: https://github.com/vlatitude/kafkabox
                   targetRevision: HEAD
@@ -26,7 +26,7 @@ spec:
                   namespace: operators
 
                 - application: apicurio-registry
-                  prefix: xd-apicurio-registry
+                  prefix: xd
                   project: default
                   repoURL: https://github.com/vlatitude/kafkabox
                   targetRevision: HEAD
@@ -34,16 +34,17 @@ spec:
                   namespace: kafka
 
                 - application: timescaledb
-                  prefix: xd-timescaledb
+                  prefix: xd
                   project: default
                   repoURL: https://github.com/vlatitude/kafkabox
                   targetRevision: HEAD
                   path: helm-charts/timescaledb
                   namespace: db
+
           - clusters: {} # Automatically use all clusters defined within Argo CD
   template:
     metadata:
-      name: '{{prefix}}-{{name}}'
+      name: '{{prefix}}-{{application}}'
     spec:
       project: '{{project}}'
       source:
