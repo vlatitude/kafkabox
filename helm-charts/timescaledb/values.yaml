@@ -46,7 +46,7 @@ secrets:
   # Selector used to provision your own Secret containing patroni configuration details
   # This is mutually exclusive with `credentials` option and takes precedence over it.
   # WARNING: Use this option with caution
-  credentialsSecretName: ""
+  credentialsSecretName: "xd-timescaledb-credentials"
 
   # This map should contain tls key and certifiacte. When empty,
   # helm will generate self-signed certificate.
@@ -57,7 +57,7 @@ secrets:
   # Selector used to provision your own Secret containing certificate details.
   # This is mutually exclusive with `certificate` option and takes precedence over it.
   # WARNING: Use this option with caution
-  certificateSecretName: ""
+  certificateSecretName: "xd-timescaledb-certificate"
 
   # This secret should contain environment variables that influence pgBackRest.
   pgbackrest: {}
@@ -77,7 +77,7 @@ secrets:
   # Selector used to provision your own Secret containing pgbackrest configuration details
   # This is mutually exclusive with `pgbackrest` option and takes precedence over it.
   # WARNING: Use this option with caution
-  pgbackrestSecretName: ""
+  pgbackrestSecretName: "xd-timescaledb-pgbackrest"
 
 backup:
   enabled: false
