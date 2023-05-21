@@ -30,7 +30,7 @@ spec:
           - clusters: {} # Automatically use all clusters defined within Argo CD
   template:
     metadata:
-      name: '{{appName}}-{{server}}'
+      name: '{{appName}}-{{name}}'
     spec:
       project: '{{project}}'
       source:
