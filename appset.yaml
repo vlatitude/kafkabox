@@ -9,25 +9,32 @@ spec:
         generators:
           - list:
               elements:
-                - appName: xd-strimzi-kafka
+                - application: strimzi-kafka
+                  appName: xd-strimzi-kafka
                   project: default
                   repoURL: https://github.com/vlatitude/kafkabox
                   targetRevision: HEAD
                   path: helm-charts/strimzi-kafka
                   namespace: kafka
-                - appName: xd-strimzi-kafka-operator
+
+                - application: strimzi-kafka-operator
+                  appName: xd-strimzi-kafka-operator
                   project: default
                   repoURL: https://github.com/vlatitude/kafkabox
                   targetRevision: HEAD
                   path: helm-charts/strimzi-kafka-operator
                   namespace: operators
-                - appName: xd-apicurio-registry
+
+                - application: apicurio-registry
+                  appName: xd-apicurio-registry
                   project: default
                   repoURL: https://github.com/vlatitude/kafkabox
                   targetRevision: HEAD
                   path: helm-charts/apicurio-registry
                   namespace: kafka
-                - appName: xd-timescaledb
+
+                - application: timescaledb
+                  appName: xd-timescaledb
                   project: default
                   repoURL: https://github.com/vlatitude/kafkabox
                   targetRevision: HEAD
@@ -49,7 +56,7 @@ spec:
 
       syncPolicy:
         automated: # automated sync by default retries failed attempts 5 times with following delays between attempts ( 5s, 10s, 20s, 40s, 80s ); retry controlled using `retry` field.
-          prune: false # Specifies if resources should be pruned during auto-syncing ( false by default ).
+          prune: true # Specifies if resources should be pruned during auto-syncing ( false by default ).
           selfHeal: true # Specifies if partial app sync should be executed when resources are changed only in target Kubernetes cluster and no git change detected ( false by default ).
           allowEmpty: false # Allows deleting all application resources during automatic syncing ( false by default ).
         syncOptions: # Sync options which modifies sync behavior
