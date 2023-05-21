@@ -1,9 +1,5 @@
 {{- define "apicurio-registry.name" -}}
-{{- if .Values.fullnameOverride -}}
-{{-   (tpl .Values.fullnameOverride .) | trunc 63 | trimSuffix "-" -}}
-{{- else -}}
-{{-   printf "%s-%s" .Release.Name .Chart.Name | trunc 63 | trimSuffix "-" -}}
-{{- end -}}
+{{ printf "%s-apicurio-registry" .Release.Name }}
 {{- end -}}
 
 {{- define "apicurio-registry.labels" -}}
