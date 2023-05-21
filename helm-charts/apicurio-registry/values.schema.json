@@ -1,0 +1,103 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/eshepelyuk/apicurio-registry-helm-chart",
+  "title": "Apicurio Registry Helm values",
+
+  "definitions": {
+    "isEnabled": {
+      "type": "boolean", "title": "should be installed" , "default": true
+    },
+    "dockerImage": {
+      "type": "object", "title": "docker image settings",
+      "required": ["registry", "repository", "tag"],
+      "properties": {
+        "registry": {"type": "string", "default": "quay.io"},
+        "repository": {"type": "string"},
+        "tag": {"type": "string"}
+      }
+    },
+    "podResources": {
+      "type": "object", "title": "pod resources",
+      "additionalProperties": false,
+      "properties": {
+        "limits": {
+          "type": "object"
+        },
+        "requests": {
+          "type": "object"
+        }
+      }
+    },
+    "persistence": {
+      "kafka": {
+        "type": "object", "additionalProperties": false,
+        "required": ["bootstrapServers"],
+        "properties": {
+          "bootstrapServers": {"type": "string"}
+        }
+      },
+      "sql": {
+        "type": "object", "additionalProperties": false,
+        "required": ["url", "username", "password"],
+        "properties": {
+          "url": {"type": "string"},
+          "username": {"type": "string"},
+          "password": {"type": "string"}
+        }
+      }
+    },
+    "keyValue": {
+      "type": "object", "additionalProperties": false,
+      "required": ["name", "value"],
+      "properties": {
+        "name": { "type": "string"},
+        "value": {"type": "string"}
+      }
+    },
+    "ingress": {
+      "type": "object", "title": "ingress resource for registry",
+      "required": ["enabled", "host", "path"],
+      "properties": {
+        "enabled": {"type": "boolean", "default": false, "title": "enable ingress resource"},
+        "host": {"type": "string", "default": "apicurio.local", "title": "hostname"},
+        "path": {"type": "string", "default": "/", "title": "ingress path"},
+        "tls": {"type": "boolean", "default": false, "title": "enable TLS for ingress host",
+            "description": "if TLS enabled the certificate is retrieved from secret with the same name as ingress host"},
+        "annotations": {"type": "object", "default": {}, "title": "ingress resource annotations"},
+        "labels": {"type": "object", "default": {}, "title": "ingress resource labels"}
+      }
+    }
+  },
+
+  "type": "object",
+
+  "properties": {
+    "registry": {
+      "type": "object", "title": "registry settings",
+      "required": ["enabled", "image", "resources", "ingress"],
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {"$ref": "#/definitions/isEnabled"},
+        "image": {"$ref": "#/definitions/dockerImage"},
+        "extraEnv": {
+          "type": "array", "default": [],
+          "items": {"$ref": "#/definitions/keyValue"}
+        },
+        "resources": {"$ref": "#/definitions/podResources"},
+        "kafka": {"$ref": "#/definitions/persistence/kafka"},
+        "sql": {"$ref": "#/definitions/persistence/sql"},
+        "ingress": {"$ref": "#/definitions/ingress"}
+      }
+    },
+    "sync": {
+      "type": "object", "title": "registry content sync settings",
+      "required": ["enabled", "image", "resources"],
+      "properties": {
+        "enabled": {"$ref": "#/definitions/isEnabled"},
+        "image": {"$ref": "#/definitions/dockerImage"},
+        "resources": {"$ref": "#/definitions/podResources"},
+        "registryUrl": {"type": ["null", "string"], "default": null}
+      }
+    }
+  }
+}

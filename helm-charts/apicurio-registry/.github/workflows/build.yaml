@@ -1,0 +1,39 @@
+name: Build
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '*.md'
+      - '*.puml'
+      - '.github/workflows/release.yaml'
+jobs:
+  build_job:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 20
+      - uses: wagoid/commitlint-github-action@v5
+        with:
+          configFile: .commitlintrc.yml
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: volesen/setup-skaffold@v1.1
+        with:
+          version: v1.38.0
+      - uses: extractions/setup-just@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: just test
+      - uses: rinx/setup-k3d@v0.0.4
+        with:
+          skipClusterCreation: true
+      - run: just k3d
+      - run: pip install httpie
+      - run: just test-e2e
+      - if: ${{ failure() }}
+        run: |
+          kubectl logs -l app.kubernetes.io/name=apicurio-registry --tail=-1

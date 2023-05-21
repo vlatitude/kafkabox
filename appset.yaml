@@ -21,6 +21,12 @@ spec:
                   targetRevision: HEAD
                   path: helm-charts/strimzi-kafka-operator
                   namespace: operators
+                - appName: xd-apicurio-registry
+                  project: default
+                  repoURL: https://github.com/vlatitude/kafkabox
+                  targetRevision: HEAD
+                  path: helm-charts/apicurio-registry
+                  namespace: kafka
                 - appName: xd-timescaledb
                   project: default
                   repoURL: https://github.com/vlatitude/kafkabox
