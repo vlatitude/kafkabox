@@ -1,8 +1,8 @@
 # Default values for strimzi-kafka.
 # This is a YAML-formatted file.
 
-nameOverride: ""
-fullnameOverride: ""
+nameOverride: "xd"
+fullnameOverride: "xd"
 
 kafka:
   version: 3.4.0
