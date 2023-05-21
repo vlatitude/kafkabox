@@ -6,7 +6,7 @@ fullnameOverride: "xd"
 
 kafka:
   version: 3.4.0
-  replicas: 3
+  replicas: 1
   storageClass: standard
   storageSize: 20Gi
   deleteClaim: false
