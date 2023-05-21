@@ -58,7 +58,7 @@ zookeeper:
         key: zookeeper-metrics-config.yml
 
 cruiseControl:
-  enable: true
+  enable: false
   brokerCapacity:
     disk: 10Gi
     cpuUtilization: 95
