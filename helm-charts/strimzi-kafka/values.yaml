@@ -7,7 +7,7 @@ fullnameOverride: "xd"
 kafka:
   version: 3.4.0
   replicas: 3
-  storageClass: alicloud-disk-essd
+  storageClass: standard
   storageSize: 20Gi
   deleteClaim: false
 
