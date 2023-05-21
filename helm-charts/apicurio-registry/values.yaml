@@ -1,3 +1,6 @@
+
+fullnameOverride: "xd"
+
 registry:
   enabled: true
 
