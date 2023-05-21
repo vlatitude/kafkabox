@@ -14,17 +14,17 @@ kafka:
   config:
     ############################# Log Basics #############################
     num.partitions: 50
-    default.replication.factor: 3
+    default.replication.factor: 1
     #min.insync.replicas should at least be 1 less than replication.factor
-    min.insync.replicas: 2
+    min.insync.replicas: 1
     auto.createConnectors.topics.enable: false
     delete.topic.enable: false
     auto.leader.rebalance.enable: true
     controlled.shutdown.enable: true
     ############################# Internal Topic Settings  #############################
-    offsets.topic.replication.factor: 3
-    transaction.state.log.replication.factor: 3
-    transaction.state.log.min.isr: 2
+    offsets.topic.replication.factor: 1
+    transaction.state.log.replication.factor: 1
+    transaction.state.log.min.isr: 1
     inter.broker.protocol.version: "3.4"
 
     ############################# Log Retention Policy #############################
